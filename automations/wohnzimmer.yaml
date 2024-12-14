@@ -1,121 +1,64 @@
-- alias: Luster in Standardmodus wenn notwendig
+- alias: "Aktiviere Lichtszenen basierend auf Präsenz und Tageszeit"
   triggers:
-  - trigger: state
-    entity_id: binary_sensor.presence_klavierbereich
-    to: 'off'
+  # Trigger 1: Präsenz erkannt
   - trigger: state
     entity_id: binary_sensor.presence_wohnzimmer
-    to: 'on'
-  - trigger: state
-    entity_id: sensor.light_intensity_wohnzimmer
-    to: dark
-  conditions:
-  - condition: state
-    entity_id: binary_sensor.presence_wohnzimmer
-    state: 'on'
-  - condition: state
-    entity_id: sensor.light_intensity_wohnzimmer
-    state: dark
-  actions:
-  - action: scene.turn_on
-    target:
-      entity_id: scene.luster_naturliches_licht
-    data:
-      transition: 3
-  id: ff6095be94a2472a9a9443538318cbb9
-- alias: Luster Klaviermodus
-  triggers:
-  - trigger: state
-    entity_id: binary_sensor.presence_klavierbereich
-    to: 'on'
-  conditions:
-  - condition: state
-    entity_id: sensor.light_intensity_wohnzimmer
-    state: dark
+    to: "on"
+  # Trigger 2: Wechsel der Tageszeitschwelle
+  - trigger: time
+    at:
+      - "07:00:00"
+      - "17:00:00"
+      - "20:00:00"
+      - "22:00:00"
   action:
-  - action: light.turn_on
-    entity_id: light.luster_wohnzimmer
-    data:
-      brightness: 255
-      transition: 3
-  id: cfc55ce4d0e04cb18fcc27594bde8039
-- alias: Wohnbereich in Standardmodus wenn notwendig
-  triggers:
-  - trigger: state
-    entity_id: binary_sensor.presence_couchbereich
-    to: 'off'
-  - trigger: state
-    entity_id: binary_sensor.presence_wohnzimmer
-    to: 'on'
-  - trigger: state
-    entity_id: sensor.light_intensity_wohnzimmer
-    to: dark
-  conditions:
-  - condition: state
-    entity_id: binary_sensor.presence_wohnzimmer
-    state: 'on'
-  - condition: state
-    entity_id: sensor.light_intensity_wohnzimmer
-    state: dark
-  actions:
-  - action: scene.turn_on
-    target:
-      entity_id: scene.wohnbereich_naturliches_licht
-    data:
-      transition: 3
-  id: add2b5d4e013475f89eaa27577ff23e5
-- alias: Wohnbereich Präsenzmodus
-  triggers:
-  - trigger: state
-    entity_id: binary_sensor.presence_couchbereich
-    to: 'on'
-  conditions:
-  - condition: state
-    entity_id: sensor.light_intensity_wohnzimmer
-    state: dark
-  - condition: state
-    entity_id: input_boolean.partymodus
-    state: 'off'
-  actions:
-  - action: light.turn_on
-    target:
-      entity_id: light.wohnbereich
-    data:
-      transition: 3
-      brightness: '{{ [ (state_attr(''light.wohnbereich'', ''brightness'') | float
-        * 1.5) | round(0), 255 ] | min }}'
-  id: 32a78cd5635b4eb8b1f539dd141288ef
-- alias: Esstischlicht Standardmodus
-  id: '1733732523968'
-  description: Standardmäßig wird das Esstischlicht gedimmt eingeschalten
-  triggers:
-  - trigger: state
-    entity_id: binary_sensor.presence_wohnzimmer
-    to: 'on'
-  - trigger: state
-    entity_id: binary_sensor.presence_esstisch
-    to: 'off'
-  - trigger: state
-    entity_id: sensor.light_intensity_wohnzimmer
-    to: dark
-  conditions:
-  - condition: state
-    entity_id: binary_sensor.presence_wohnzimmer
-    state: 'on'
-  - condition: state
-    entity_id: binary_sensor.presence_esstisch
-    state: 'off'
-  - condition: state
-    entity_id: sensor.light_intensity_wohnzimmer
-    state: dark
-  actions:
-  - action: light.turn_on
-    target:
-      entity_id: light.esstisch
-    data:
-      brightness: 1
-      transition: 3
-  mode: single
+    - variables:
+        transition_time: >
+          {% if trigger.platform == 'state' %}
+            3 
+          {% elif trigger.platform == 'time' %}
+            300
+          {% else %}
+            0 
+          {% endif %}
+    - choose:
+        # Untertags (07:00 - 17:00)
+        - conditions:
+            - condition: time
+              after: "07:00:00"
+              before: "17:00:00"
+          sequence:
+            - action: scene.turn_on
+              target:
+                entity_id: scene.wohnzimmer_morgendammerung
+        # Abendessen (17:00 - 20:00)
+        - conditions:
+            - condition: time
+              after: "17:00:00"
+              before: "20:00:00"
+          sequence:
+            - action: scene.turn_on
+              target:
+                entity_id: scene.wohnzimmer_abendessen_savanne
+        # Später Abend (20:00 - 22:00)
+        - conditions:
+            - condition: time
+              after: "18:00:00"
+              before: "23:00:00"
+          sequence:
+            - action: scene.turn_on
+              target:
+                entity_id: scene.wohnzimmer_abend_arbeit
+        # Nachtszene (22:00 - 06:00)
+        - conditions:
+            - condition: time
+              after: "23:00:00"
+              before: "06:00:00"
+          sequence:
+            - action: scene.turn_on
+              target:
+                entity_id: scene.wohnzimmer_nightlight
+
 - alias: Esstischlicht hell bei Anwesenheit
   id: '1733732407539'
   description: ''
@@ -128,13 +71,34 @@
     entity_id: input_boolean.partymodus
     state: 'off'
   actions:
-  - action: light.turn_on
+  - variables:
+      current_brightness: "{{ state_attr('light.esstisch', 'brightness') | default(0) }}"
+  - action: input_number.set_value
+    target:
+      entity_id: input_number.esstisch_previous_brightness
     data:
-      brightness_pct: 80
-      transition: 3
+      value: "{{ current_brightness }}"
+  - action: light.turn_on
     target:
       entity_id: light.esstisch
+    data:
+      brightness: "{{ [[current_brightness * 1.5 | round(0), 255] | min, 80] | max }}"
+      transition: 10
   mode: single
+
+- alias: "Esstisch keine Präsenz mehr"
+  trigger:
+  - trigger: state
+    entity_id: binary_sensor.presence_esstisch
+    to: "off"
+  action:
+  - action: light.turn_on
+    target:
+      entity_id: light.esstisch
+    data:
+      brightness: "{{ states('input_number.esstisch_previous_brightness') | int }}"
+      transition: 10
+
 - alias: Wohnzimmerlicht aus, wenn nicht benötigt
   id: '1733742144480'
   description: 'Läuft, wenn alle den Raum verlassen haben oder wenn Ida mit der Reinigung fertig ist.'
@@ -167,19 +131,5 @@
     target:
       area_id: wohnzimmer
   mode: single
-- alias: Licher an, wenn Ida fährt
-  triggers:
-  - trigger: state
-    entity_id: vacuum.ida
-    to: 'cleaning'
-    for:
-      seconds: 3 # Verhindert, dass beim schnellen Wechsel docked -> cleaning -> docked die Lichter anbleiben
-  conditions:
-    - condition: state
-      entity_id: sensor.light_intensity_wohnzimmer
-      state: dark
-  actions:
-  - action: scene.turn_on
-    target:
-      entity_id: scene.wohnzimmer_energize
+
   

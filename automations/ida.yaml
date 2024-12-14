@@ -1,0 +1,15 @@
+- alias: Licher an, wenn Ida fährt
+  triggers:
+  - trigger: state
+    entity_id: vacuum.ida
+    to: 'cleaning'
+    for:
+      seconds: 3 # Verhindert, dass beim schnellen Wechsel docked -> cleaning -> docked die Lichter anbleiben
+  conditions:
+    - condition: state
+      entity_id: sensor.light_intensity_wohnzimmer
+      state: dark
+  actions:
+  - action: scene.turn_on
+    target:
+      entity_id: scene.wohnzimmer_energize

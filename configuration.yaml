@@ -17,6 +17,14 @@ group:
       - person.clemens
       - person.carola
 
+input_number:
+  esstisch_previous_brightness:
+    name: Vorige Esstisch-Helligkeit
+    initial: 0
+    min: 0
+    max: 255
+    step: 1
+
 template:
   - binary_sensor:
     - name: "Presence Toilette"
