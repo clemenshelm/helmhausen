@@ -57,3 +57,7 @@ dlib_unknown_faces
 .pc-session
 google*.deb
 .homekit.state
+
+# Own additions
+*.db-shm
+*.db-wal
