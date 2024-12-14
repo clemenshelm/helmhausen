@@ -49,11 +49,11 @@
             - action: scene.turn_on
               target:
                 entity_id: scene.wohnzimmer_abend_arbeit
-        # Nachtszene (22:00 - 06:00)
+        # Nachtszene (22:00 - 07:00)
         - conditions:
             - condition: time
               after: "23:00:00"
-              before: "06:00:00"
+              before: "07:00:00"
           sequence:
             - action: scene.turn_on
               target:
