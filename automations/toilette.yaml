@@ -1,0 +1,28 @@
+- alias: Toilettenlicht an bei Anwesenheit
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id: binary_sensor.presence_toilette
+    to: 'on'
+  conditions:
+  - condition: numeric_state
+    entity_id: sensor.light_level_toilette
+    below: 100
+  actions:
+  - action: scene.turn_on
+    target:
+      entity_id: scene.toilette_naturliches_licht
+  mode: single
+  id: 72aa11862ec744bcaeacdff5df1214af
+- alias: Toilettenlicht aus bei Abwesenheit
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id: binary_sensor.presence_toilette
+    to: 'off'
+  actions:
+  - action: light.turn_off
+    target:
+      area_id: toilette
+  mode: single
+  id: 4ea41d6844c846a689ce722f422d4e9b

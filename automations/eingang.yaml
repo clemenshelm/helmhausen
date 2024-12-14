@@ -1,0 +1,47 @@
+- alias: Türen öffnen bei Klingeln
+  triggers:
+  - trigger: event
+    event_type: event.haustur_klingeln
+  conditions:
+  - condition: state
+    entity_id: binary_sensor.presence_hauseingang
+    state: 'on'
+  actions:
+  - action: script.turn_on
+    target:
+      entity_id: script.open_doors
+  id: 497581ac8aec41a79d4be2f356d21796
+- alias: Eintreten erlauben, wenn jemand zu Hause ist
+  trigger:
+  - trigger: state
+    entity_id: group.inhabitants
+    to: home
+  action:
+  - action: input_boolean.turn_on
+    target:
+      entity_id: input_boolean.entry_grant
+  id: 19c8a7a889c344e5b9573b5cb343eaad
+- alias: Eintreten verbieten, wenn niemand zuhause ist
+  triggers:
+  - trigger: state
+    entity_id: group.inhabitants
+    to: not_home
+  actions:
+  - action: input_boolean.turn_off
+    target:
+      entity_id: input_boolean.entry_grant
+  id: e1e5af7219b74bc4a86e6677f8f7ac00
+- alias: Eintreten nach einer Minute wieder verbieten, wenn niemand zuhause ist
+  triggers:
+  - trigger: state
+    entity_id: input_boolean.entry_grant
+    to: 'on'
+  actions:
+  - delay: 00:01:00
+  - condition: state
+    entity_id: group.inhabitants
+    state: not_home
+  - action: input_boolean.turn_off
+    target:
+      entity_id: input_boolean.entry_grant
+  id: 0e2d7757ece14a29b26d317e47ee623d
