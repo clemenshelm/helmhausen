@@ -1,11 +1,17 @@
 open_doors:
-  alias: "Haustür öffnen und danach Wohnungstür entriegeln"
+  alias: Haustür öffnen und danach Wohnungstür entriegeln
   sequence:
-    - action: button.press
-      target:
-        entity_id: button.haustur_tur_offnen
-    - delay: "00:00:10"
-    - action: button.press
-      target:
-        entity_id: button.wohnungstur_unlatch
+  - action: button.press
+    target:
+      entity_id: button.haustur_tur_offnen
+    data: {}
+  - delay:
+      hours: 0
+      minutes: 0
+      seconds: 13
+      milliseconds: 0
+  - action: button.press
+    target:
+      entity_id: button.wohnungstur_unlatch
+    data: {}
   mode: single

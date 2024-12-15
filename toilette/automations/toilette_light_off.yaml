@@ -1,0 +1,12 @@
+- alias: Toilettenlicht aus bei Abwesenheit
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id: binary_sensor.presence_toilette
+    to: 'off'
+  actions:
+  - action: light.turn_off
+    target:
+      area_id: toilette
+  mode: single
+  id: 4ea41d6844c846a689ce722f422d4e9b

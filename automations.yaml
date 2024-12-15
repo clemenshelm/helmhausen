@@ -1,0 +1,37 @@
+- id: '1734217778484'
+  alias: "\U0001F525 Heizplan Toilette"
+  description: ''
+  use_blueprint:
+    path: panhans/advanced_heating_control.yaml
+    input:
+      input_trvs:
+      - climate.heizung_toilette
+      input_temperature_sensor: sensor.bewegungsmelder_toilette_temperatur
+      input_temperature_eco_static: 19
+      input_schedulers:
+      - schedule.heizungszeitplan_comfort
+      input_persons:
+      - person.carola
+      - person.clemens
+      - person.emilio
+      input_presence_sensor: binary_sensor.presence_toilette
+      input_presence_reaction_on_time:
+        hours: 0
+        minutes: 0
+        seconds: 1
+      input_presence_reaction_off_time:
+        hours: 0
+        minutes: 0
+        seconds: 1
+      input_away_offset: 5
+      input_away_scheduler_mode: true
+      input_away_presence_mode: true
+      input_frost_protection_temp: 10
+      input_frost_protection_duration:
+        hours: 0
+        minutes: 0
+        seconds: 0
+        days: 1
+      input_adjustments:
+      - time: '22:00'
+        eco: '17'
