@@ -1,0 +1,10 @@
+alias: Wohnzimmerlicht aus, wenn hell genug
+triggers:
+- trigger: state
+  entity_id: sensor.light_intensity_wohnzimmer
+  to: bright
+actions:
+- action: light.turn_off
+  target:
+    area_id: wohnzimmer
+mode: single

@@ -1,0 +1,11 @@
+alias: "Aktiviere Lichtszenen bei auf Präsenz"
+id: '6552222382601'
+triggers:
+# Trigger 1: Präsenz erkannt
+- trigger: state
+  entity_id: binary_sensor.presence_wohnzimmer
+  to: "on"
+action:
+  - service: script.turn_on_scene_for_daytime
+    data:
+      transition_time: 3

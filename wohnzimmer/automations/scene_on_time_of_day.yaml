@@ -1,0 +1,12 @@
+alias: "Aktiviere Lichtszenen zu gewissen Tageszeiten"
+triggers:
+- trigger: time
+  at:
+    - "07:00:00"
+    - "17:00:00"
+    - "20:00:00"
+    - "22:00:00"
+action:
+  - service: script.turn_on_scene_for_daytime
+    data:
+      transition_time: 300

@@ -1,0 +1,19 @@
+alias: Esstischlicht hell bei Anwesenheit
+id: '1733732407539'
+description: ''
+triggers:
+- trigger: state
+  entity_id: binary_sensor.presence_esstisch
+  to: 'on'
+conditions:
+- condition: state
+  entity_id: input_boolean.partymodus
+  state: 'off'
+actions:
+- action: light.turn_on
+  target:
+    entity_id: light.esstisch
+  data:
+    brightness: 150
+    transition: 10
+mode: single

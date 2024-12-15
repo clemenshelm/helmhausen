@@ -1,0 +1,22 @@
+alias: Wohnzimmerlicht aus, wenn nicht benötigt
+id: '1733742144480'
+description: 'Läuft, wenn alle den Raum verlassen haben oder wenn Ida mit der Reinigung fertig ist.'
+triggers:
+- trigger: state
+  entity_id: binary_sensor.presence_wohnzimmer
+  to: 'off'
+- trigger: state
+  entity_id: vacuum.ida
+  to: 'docked'
+conditions:
+- condition: state
+  entity_id: binary_sensor.presence_wohnzimmer
+  state: 'off'
+- condition: state
+  entity_id: vacuum.ida
+  state: 'docked'
+actions:
+- action: light.turn_off
+  target:
+    area_id: wohnzimmer
+mode: single

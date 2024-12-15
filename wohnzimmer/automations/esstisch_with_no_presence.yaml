@@ -1,0 +1,9 @@
+alias: "Esstisch keine Präsenz mehr"
+trigger:
+- trigger: state
+  entity_id: binary_sensor.presence_esstisch
+  to: "off"
+action:
+- service: script.turn_on_scene_for_daytime
+  data:
+    transition_time: 10

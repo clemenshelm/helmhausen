@@ -1,0 +1,42 @@
+sequence:
+  - choose:
+    # Untertags (07:00 - 17:00)
+    - conditions:
+      - condition: time
+        after: "07:00:00"
+        before: "17:00:00"
+      sequence:
+      - action: scene.turn_on
+        entity_id: scene.wohnzimmer_morgendammerung
+        data:
+          transition: "{{ transition_time }}"
+    # Abendessen (17:00 - 20:00)
+    - conditions:
+      - condition: time
+        after: "17:00:00"
+        before: "20:00:00"
+      sequence:
+      - action: scene.turn_on
+        entity_id: scene.wohnzimmer_abendessen_savanne
+        data:
+          transition: "{{ transition_time }}"
+    # Später Abend (20:00 - 22:00)
+    - conditions:
+      - condition: time
+        after: "20:00:00"
+        before: "23:00:00"
+      sequence:
+      - action: scene.turn_on
+        entity_id: scene.wohnzimmer_abend_arbeit
+        data:
+          transition: "{{ transition_time }}"
+    # Nachtszene (22:00 - 07:00)
+    - conditions:
+      - condition: time
+        after: "23:00:00"
+        before: "07:00:00"
+      sequence:
+      - action: scene.turn_on
+        entity_id: scene.wohnzimmer_nightlight
+        data:
+          transition: "{{ transition_time }}"

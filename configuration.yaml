@@ -7,9 +7,11 @@ frontend:
   themes: !include_dir_merge_named themes
 
 automation: !include automations.yaml
-automation toilette: !include_dir_merge_list toilette/automations/
+automation toilette: !include_dir_list toilette/automations/
+automation wohnzimmer: !include_dir_list wohnzimmer/automations/
 automation manual: !include_dir_merge_list automations/
 script: !include scripts.yaml
+script wohnzimmer: !include_dir_named wohnzimmer/scripts/
 scene: !include scenes.yaml
 
 group:
@@ -20,60 +22,11 @@ group:
       - person.carola
 
 input_number:
-  esstisch_previous_brightness:
-    name: Vorige Esstisch-Helligkeit
+  esstisch_default_brightness:
+    name: Standard Esstisch-Helligkeit
     initial: 0
     min: 0
     max: 255
     step: 1
 
-template:
-  - binary_sensor:
-    - name: "Presence Toilette"
-      unique_id: 'presence_toilette'
-      state: >
-        {% set motion_entity = states.binary_sensor.bewegungsmelder_toilette_bewegung %}
-        {% if motion_entity is not none %}
-          {% if motion_entity.state == 'on' %}
-            true
-          {% else %}
-            {{ ( now()|as_timestamp() - motion_entity.last_changed|as_timestamp() ) < 60 }}
-          {% endif %}
-        {% else %}
-          false
-        {% endif %}
-      device_class: occupancy
-      
-  - binary_sensor:
-      - name: "Ankunft"
-        unique_id: 'presence_entrance'
-        state: >
-          {% set device_ids = [
-            'device_tracker.pixel_7_pro'
-          ] %}
-
-          {% set any_just_arrived = false %}
-          {% for dev_id in device_ids %}
-            {% set dev = states[dev_id] %}
-            {% if dev is not none and dev.state == 'home' %}
-              {% set diff = now()|as_timestamp() - dev.last_changed|as_timestamp() %}
-              {% if diff < 180 %}
-                {% set any_just_arrived = true %}
-              {% endif %}
-            {% endif %}
-          {% endfor %}
-          {{ any_just_arrived }}
-        device_class: presence
-    
-  - sensor:
-    - name: "Helligkeit Wohnzimmer"
-      unique_id: light_intensity_wohnzimmer
-      state: >
-        {% set lux = states('sensor.light_level_wohnzimmer') | float %}
-        {% if lux < 100 %}
-          dark
-        {% elif lux < 150 %}
-          sufficient
-        {% else %}
-          bright
-        {% endif %}
+template: !include templates.yaml
